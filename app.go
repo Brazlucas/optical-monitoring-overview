@@ -10,9 +10,20 @@ type App struct {
 	ctx context.Context
 }
 
+var vendedores = []Vendedor{
+	{ID: 1, Nome: "Gabrielli"},
+	{ID: 2, Nome: "Matheus"},
+	{ID: 3, Nome: "Wagner"},
+	{ID: 4, Nome: "Michelly"},
+}
+
 // NewApp creates a new App application struct
 func NewApp() *App {
 	return &App{}
+}
+
+func (a *App) ListarVendedores() []Vendedor {
+	return vendedores
 }
 
 // startup is called when the app starts. The context is saved
@@ -30,6 +41,27 @@ func (a *App) AdicionarRegistro(data string, orcRec, orcSemRec, solar, ajuste, e
 	return AdicionarRegistro(data, orcRec, orcSemRec, solar, ajuste, entrega, assistencia, vendedorID, anotacoes)
 }
 
-func (a *App) ListarRegistros() []Registro {
-	return ListarRegistros()
+func (a *App) ListarRegistros() []map[string]interface{} {
+	var registros []Registro
+	DB.Preload("Vendedor").Find(&registros)
+
+	var resultado []map[string]interface{}
+
+	for _, r := range registros {
+		resultado = append(resultado, map[string]interface{}{
+			"ID":                  r.ID,
+			"Data":                r.Data,
+			"OrcamentoReceita":    r.OrcamentoReceita,
+			"OrcamentoSemReceita": r.OrcamentoSemReceita,
+			"OculosSolar":         r.OculosSolar,
+			"Ajuste":              r.Ajuste,
+			"Entrega":             r.Entrega,
+			"Assistencia":         r.Assistencia,
+			"VendedorID":          r.VendedorID,
+			"VendedorNome":        r.Vendedor.Nome,
+			"Anotacoes":           r.Anotacoes,
+		})
+	}
+
+	return resultado
 }

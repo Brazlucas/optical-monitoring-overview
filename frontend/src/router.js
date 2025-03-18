@@ -3,8 +3,8 @@ import Form from "./components/Form.vue";
 import ListaRegistros from "./components/Lista.vue";
 
 const routes = [
-  { path: "/", component: Form },
-  { path: "/registros", component: ListaRegistros },
+  { path: "/form", component: Form },
+  { path: "/", component: ListaRegistros },
 ];
 
 const router = createRouter({

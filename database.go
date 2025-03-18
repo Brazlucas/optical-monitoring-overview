@@ -30,6 +30,7 @@ type Registro struct {
 	Entrega             int
 	Assistencia         int
 	VendedorID          uint
+	Vendedor            Vendedor `gorm:"foreignKey:VendedorID"` // Adicionando relação correta
 	Anotacoes           string
 }
 

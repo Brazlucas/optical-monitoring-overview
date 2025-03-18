@@ -18,6 +18,6 @@ func AdicionarRegistro(data string, orcRec, orcSemRec, solar, ajuste, entrega, a
 
 func ListarRegistros() []Registro {
 	var registros []Registro
-	DB.Find(&registros)
+	DB.Preload("Vendedor").Find(&registros)
 	return registros
 }

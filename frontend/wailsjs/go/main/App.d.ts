@@ -6,4 +6,6 @@ export function AdicionarRegistro(arg1:string,arg2:number,arg3:number,arg4:numbe
 
 export function Greet(arg1:string):Promise<string>;
 
-export function ListarRegistros():Promise<Array<main.Registro>>;
+export function ListarRegistros():Promise<Array<Record<string, any>>>;
+
+export function ListarVendedores():Promise<Array<main.Vendedor>>;

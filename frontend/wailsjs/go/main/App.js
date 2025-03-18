@@ -13,3 +13,7 @@ export function Greet(arg1) {
 export function ListarRegistros() {
   return window['go']['main']['App']['ListarRegistros']();
 }
+
+export function ListarVendedores() {
+  return window['go']['main']['App']['ListarVendedores']();
+}
