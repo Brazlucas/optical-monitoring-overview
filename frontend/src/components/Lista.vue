@@ -58,7 +58,6 @@ export default {
 
     const carregarRegistros = async () => {
       registros.value = await ListarRegistros();
-      console.log(registros.value);
     };
 
     const formatData = (data) => {

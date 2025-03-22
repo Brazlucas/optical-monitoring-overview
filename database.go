@@ -18,6 +18,19 @@ func InitDB() {
 
 	// Criando a estrutura do banco
 	DB.AutoMigrate(&Registro{}, &Vendedor{})
+
+	// Inserir vendedores no banco se ainda não existirem
+	var count int64
+	DB.Model(&Vendedor{}).Count(&count)
+	if count == 0 {
+		vendedores := []Vendedor{
+			{Nome: "Gabrielli"},
+			{Nome: "Matheus"},
+			{Nome: "Wagner"},
+			{Nome: "Michelly"},
+		}
+		DB.Create(&vendedores) // Insere os vendedores no banco
+	}
 }
 
 type Registro struct {

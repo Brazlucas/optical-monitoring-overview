@@ -6,10 +6,6 @@ export function AdicionarRegistro(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8
   return window['go']['main']['App']['AdicionarRegistro'](arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
 }
 
-export function Greet(arg1) {
-  return window['go']['main']['App']['Greet'](arg1);
-}
-
 export function ListarRegistros() {
   return window['go']['main']['App']['ListarRegistros']();
 }
