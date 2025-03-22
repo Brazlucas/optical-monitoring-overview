@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-// AdicionarRegistro manipula a criação de um novo registro no banco
+// AdicionarRegistro manipula a criação ou atualização de um registro
 func AdicionarRegistro(data string, orcRec, orcSemRec, solar, ajuste, entrega, assistencia, vendedorID int, anotacoes string) error {
 	// Verificar se o vendedor existe
 	var vendedor Vendedor
@@ -11,22 +11,39 @@ func AdicionarRegistro(data string, orcRec, orcSemRec, solar, ajuste, entrega, a
 		return fmt.Errorf("vendedor com ID %d não encontrado", vendedorID)
 	}
 
-	// Criar um novo registro
-	registro := Registro{
-		Data:                data,
-		OrcamentoReceita:    orcRec,
-		OrcamentoSemReceita: orcSemRec,
-		OculosSolar:         solar,
-		Ajuste:              ajuste,
-		Entrega:             entrega,
-		Assistencia:         assistencia,
-		VendedorID:          uint(vendedorID),
-		Vendedor:            vendedor, // Associar corretamente o vendedor
-		Anotacoes:           anotacoes,
+	// Verificar se já existe um registro para esse vendedor e data
+	var registro Registro
+	result = DB.Where("vendedor_id = ? AND data = ?", vendedorID, data).First(&registro)
+
+	// Se o registro existe, incrementa os valores, caso contrário cria um novo
+	if result.Error == nil {
+		// Incrementando os valores existentes
+		registro.OrcamentoReceita += orcRec
+		registro.OrcamentoSemReceita += orcSemRec
+		registro.OculosSolar += solar
+		registro.Ajuste += ajuste
+		registro.Entrega += entrega
+		registro.Assistencia += assistencia
+		registro.Anotacoes = anotacoes
+
+		result = DB.Save(&registro)
+	} else {
+		// Criar um novo registro
+		registro = Registro{
+			Data:                data,
+			OrcamentoReceita:    orcRec,
+			OrcamentoSemReceita: orcSemRec,
+			OculosSolar:         solar,
+			Ajuste:              ajuste,
+			Entrega:             entrega,
+			Assistencia:         assistencia,
+			VendedorID:          uint(vendedorID),
+			Vendedor:            vendedor, // Associar corretamente o vendedor
+			Anotacoes:           anotacoes,
+		}
+		result = DB.Create(&registro)
 	}
 
-	// Salvar o registro no banco
-	result = DB.Create(&registro)
 	return result.Error
 }
 

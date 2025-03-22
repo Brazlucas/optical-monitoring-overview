@@ -17,42 +17,45 @@
                   outlined
                 ></v-select>
               </v-col>
-              <!-- Data -->
-              <v-col cols="12" md="6">
-                <v-text-field v-model="data" label="Data" type="date" outlined></v-text-field>
-              </v-col>
-              <!-- Orçamentos -->
-              <v-col cols="12" md="6">
-                <v-text-field v-model="orcamentoReceita" label="Orçamento c/ Receita" type="number" outlined></v-text-field>
-              </v-col>
-              <v-col cols="12" md="6">
-                <v-text-field v-model="orcamentoSemReceita" label="Orçamento s/ Receita" type="number" outlined></v-text-field>
-              </v-col>
-              <!-- Óculos Solar -->
-              <v-col cols="12" md="6">
-                <v-text-field v-model="oculosSolar" label="Óculos Solar" type="number" outlined></v-text-field>
-              </v-col>
-              <!-- Ajuste -->
-              <v-col cols="12" md="6">
-                <v-text-field v-model="ajuste" label="Ajuste" type="number" outlined></v-text-field>
-              </v-col>
-              <!-- Entrega -->
-              <v-col cols="12" md="6">
-                <v-text-field v-model="entrega" label="Entrega" type="number" outlined></v-text-field>
-              </v-col>
-              <!-- Assistência -->
-              <v-col cols="12" md="6">
-                <v-text-field v-model="assistencia" label="Assistência" type="number" outlined></v-text-field>
-              </v-col>
-              <!-- Anotações -->
-              <v-col cols="12">
-                <v-textarea v-model="anotacoes" label="Anotações" rows="2" outlined></v-textarea>
-              </v-col>
+              <!-- Campos condicionais (liberados quando um vendedor é selecionado) -->
+              <template v-if="vendedorSelecionado">
+                <!-- Data -->
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="data" label="Data" type="date" outlined></v-text-field>
+                </v-col>
+                <!-- Orçamentos -->
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="orcamentoReceita" label="Orçamento c/ Receita" type="number" outlined></v-text-field>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="orcamentoSemReceita" label="Orçamento s/ Receita" type="number" outlined></v-text-field>
+                </v-col>
+                <!-- Óculos Solar -->
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="oculosSolar" label="Óculos Solar" type="number" outlined></v-text-field>
+                </v-col>
+                <!-- Ajuste -->
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="ajuste" label="Ajuste" type="number" outlined></v-text-field>
+                </v-col>
+                <!-- Entrega -->
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="entrega" label="Entrega" type="number" outlined></v-text-field>
+                </v-col>
+                <!-- Assistência -->
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="assistencia" label="Assistência" type="number" outlined></v-text-field>
+                </v-col>
+                <!-- Anotações -->
+                <v-col cols="12">
+                  <v-textarea v-model="anotacoes" label="Anotações" rows="2" outlined></v-textarea>
+                </v-col>
+              </template>
             </v-row>
             <!-- Botões -->
             <v-row>
               <v-col cols="12" md="6">
-                <v-btn color="primary" block @click="adicionarRegistro">Adicionar</v-btn>
+                <v-btn color="red" block @click="adicionarRegistro">Adicionar</v-btn>
               </v-col>
               <v-col cols="12" md="6">
                 <v-btn color="grey" block outlined @click="$router.go(-1)">Cancelar</v-btn>
@@ -84,6 +87,18 @@ export default {
     const vendedores = ref([]);
     const vendedorSelecionado = ref(null);
 
+    // Função para obter a data atual no formato YYYY-MM-DD
+    const getCurrentDate = () => {
+      const today = new Date();
+      const day = String(today.getDate()).padStart(2, '0');
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const year = today.getFullYear();
+      return `${year}-${month}-${day}`;
+    };
+
+    // Define a data atual no campo "data"
+    data.value = getCurrentDate();
+
     const carregarVendedores = async () => {
       try {
         vendedores.value = await ListarVendedores();
@@ -95,33 +110,36 @@ export default {
     onMounted(carregarVendedores);
 
     const adicionarRegistro = async () => {
+      if (!vendedorSelecionado.value || !data.value) {
+        alert("Selecione um vendedor e uma data antes de adicionar o registro!");
+        return;
+      }
 
-    if (!vendedorSelecionado.value) {
-      alert("Selecione um vendedor antes de adicionar o registro!");
-      return;
-    }
+      try {
+        // Converter a data para o formato que o backend espera
+        const dataFormatada = new Date(data.value).toISOString().split("T")[0]; // YYYY-MM-DD
+        
+        // Converter vendedor para número, garantindo que não seja string
+        const vendedorID = parseInt(vendedorSelecionado.value);
 
-    try {
-      // Converter a data para o formato que o backend espera
-      const dataFormatada = new Date(data.value).toISOString().split("T")[0]; // YYYY-MM-DD
-      
-      // Converter vendedor para número, garantindo que não seja string
-      const vendedorID = parseInt(vendedorSelecionado.value);
+        // Chamar o back-end para adicionar ou atualizar o registro
+        await AdicionarRegistro(
+          dataFormatada, // Data convertida
+          parseInt(orcamentoReceita.value) || 0,
+          parseInt(orcamentoSemReceita.value) || 0,
+          parseInt(oculosSolar.value) || 0,
+          parseInt(ajuste.value) || 0,
+          parseInt(entrega.value) || 0,
+          parseInt(assistencia.value) || 0,
+          vendedorID, // ID convertido para número
+          anotacoes.value
+        );
 
-      await AdicionarRegistro(
-        dataFormatada, // Data convertida
-        parseInt(orcamentoReceita.value) || 0,
-        parseInt(orcamentoSemReceita.value) || 0,
-        parseInt(oculosSolar.value) || 0,
-        parseInt(ajuste.value) || 0,
-        parseInt(entrega.value) || 0,
-        parseInt(assistencia.value) || 0,
-        vendedorID, // ID convertido para número
-        anotacoes.value
-      );
+        // Após sucesso, redirecionar para a lista de registros
         router.push("/");
+
       } catch (error) {
-        console.error("Erro ao adicionar registro:", error);
+        console.error("Erro ao adicionar/atualizar registro:", error);
       }
     };
 

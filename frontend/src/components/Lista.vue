@@ -1,15 +1,39 @@
 <template>
   <v-row class="pa-5">
     <v-col cols="12">
-      <v-btn @click="$router.push('/form')" color="primary" class="mt-4 mb-5">
-        <v-icon left>mdi-plus</v-icon> Adicionar Novo
-      </v-btn>
-
       <v-card elevation="3">
+        <v-row class="ml-1 justify-end">
+
+          <!-- <v-col cols="2">
+            <v-select
+              v-model="anoFiltro"
+              :items="anosDisponiveis"
+              label="Filtrar por Ano"
+              outlined
+            ></v-select>
+          </v-col> -->
+
+          <v-col cols="2">
+            <v-select
+              color="red"
+              v-model="periodoFiltro"
+              :items="periodos"
+              label="Filtrar por intervalo"
+            ></v-select>
+          </v-col>
+
+          <v-col cols="2">
+            <v-btn @click="$router.push('/form')" color="red" class="mt-4 mb-5">
+              <v-icon left>mdi-plus</v-icon> Novo Registro
+            </v-btn>
+          </v-col>
+
+        </v-row>
         <v-card-title class="text-h5">Registros</v-card-title>
         <v-divider></v-divider>
+      
         <v-data-table
-          :items="registros"
+          :items="registrosFiltrados"
           :headers="headers"
           item-value="id"
           density="comfortable"
@@ -17,20 +41,21 @@
           <template v-slot:item.Data="{ item }">
             {{ formatData(item.Data) }}
           </template>
+          <!-- Linha de Totais no corpo da tabela -->
+          <template v-slot:body.append>
+            <tr>
+              <td><strong>Total</strong></td>
+              <td></td>
+              <td><b>{{ totalOrcamentoReceita }}</b></td>
+              <td><b>{{ totalOrcamentoSemReceita }}</b></td>
+              <td><b>{{ totalOculosSolar }}</b></td>
+              <td><b>{{ totalAjuste }}</b></td>
+              <td><b>{{ totalEntrega }}</b></td>
+              <td><b>{{ totalAssistencia }}</b></td>
+              <td></td>
+            </tr>
+          </template>
         </v-data-table>
-        <!-- Linha de totais -->
-        <!-- <v-footer class="bg-blue-darken-3 white--text">
-          <v-row no-gutters class="pa-3">
-            <v-col cols="12" md="2"><strong>Total</strong></v-col>
-            <v-col cols="12" md="1">{{ totalOrcamentoReceita }}</v-col>
-            <v-col cols="12" md="1">{{ totalOrcamentoSemReceita }}</v-col>
-            <v-col cols="12" md="1">{{ totalOculosSolar }}</v-col>
-            <v-col cols="12" md="1">{{ totalAjuste }}</v-col>
-            <v-col cols="12" md="1">{{ totalEntrega }}</v-col>
-            <v-col cols="12" md="1">{{ totalAssistencia }}</v-col>
-            <v-col cols="12" md="2">—</v-col>
-          </v-row>
-        </v-footer> -->
       </v-card>
     </v-col>
   </v-row>
@@ -43,6 +68,16 @@ import { ListarRegistros } from "../../wailsjs/go/main/App";
 export default {
   setup() {
     const registros = ref([]);
+    const periodoFiltro = ref("semanal");
+    const anoFiltro = ref(null);
+
+    const periodos = ["semanal", "mensal", "anual"];
+
+    // Gerando os anos disponíveis a partir dos registros
+    const anosDisponiveis = computed(() => {
+      const anos = registros.value.map((registro) => new Date(registro.Data).getFullYear());
+      return [...new Set(anos)].sort((a, b) => b - a); // Ordenando de forma decrescente
+    });
 
     const headers = [
       { title: "Data", key: "Data" },
@@ -70,30 +105,56 @@ export default {
       });
     };
 
+    const filtrarRegistros = (filtro, ano) => {
+      const hoje = new Date();
+      const inicioPeriodo = new Date();
+
+      if (filtro === "semanal") {
+        inicioPeriodo.setDate(hoje.getDate() - 7); // 7 dias atrás
+      } else if (filtro === "mensal") {
+        inicioPeriodo.setMonth(hoje.getMonth() - 1); // 1 mês atrás
+      } else if (filtro === "anual") {
+        inicioPeriodo.setFullYear(hoje.getFullYear() - 1); // 1 ano atrás
+      }
+
+      return registros.value.filter((registro) => {
+        const dataRegistro = new Date(registro.Data);
+        const anoRegistro = dataRegistro.getFullYear();
+
+        // Filtro por intervalo e por ano
+        return (
+          dataRegistro >= inicioPeriodo &&
+          (!ano || anoRegistro === ano)
+        );
+      });
+    };
+
     // Computed properties para calcular totais
     const totalOrcamentoReceita = computed(() =>
-      registros.value.reduce((sum, r) => sum + r.OrcamentoReceita, 0)
+      registrosFiltrados.value.reduce((sum, r) => sum + r.OrcamentoReceita, 0)
     );
 
     const totalOrcamentoSemReceita = computed(() =>
-      registros.value.reduce((sum, r) => sum + r.OrcamentoSemReceita, 0)
+      registrosFiltrados.value.reduce((sum, r) => sum + r.OrcamentoSemReceita, 0)
     );
 
     const totalOculosSolar = computed(() =>
-      registros.value.reduce((sum, r) => sum + r.OculosSolar, 0)
+      registrosFiltrados.value.reduce((sum, r) => sum + r.OculosSolar, 0)
     );
 
     const totalAjuste = computed(() =>
-      registros.value.reduce((sum, r) => sum + r.Ajuste, 0)
+      registrosFiltrados.value.reduce((sum, r) => sum + r.Ajuste, 0)
     );
 
     const totalEntrega = computed(() =>
-      registros.value.reduce((sum, r) => sum + r.Entrega, 0)
+      registrosFiltrados.value.reduce((sum, r) => sum + r.Entrega, 0)
     );
 
     const totalAssistencia = computed(() =>
-      registros.value.reduce((sum, r) => sum + r.Assistencia, 0)
+      registrosFiltrados.value.reduce((sum, r) => sum + r.Assistencia, 0)
     );
+
+    const registrosFiltrados = computed(() => filtrarRegistros(periodoFiltro.value, anoFiltro.value));
 
     onMounted(carregarRegistros);
 
@@ -101,6 +162,11 @@ export default {
       registros,
       headers,
       formatData,
+      periodoFiltro,
+      periodos,
+      anoFiltro,
+      anosDisponiveis,
+      registrosFiltrados,
       totalOrcamentoReceita,
       totalOrcamentoSemReceita,
       totalOculosSolar,
