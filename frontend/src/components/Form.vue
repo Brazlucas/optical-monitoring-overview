@@ -55,7 +55,22 @@
             <!-- Botões -->
             <v-row>
               <v-col cols="12" md="6">
-                <v-btn color="red" block @click="adicionarRegistro">Adicionar</v-btn>
+                <v-btn
+                  color="red"
+                  block
+                  @click="adicionarRegistro"
+                  :disabled="!(
+                    anotacoes ||
+                    orcamentoReceita ||
+                    orcamentoSemReceita ||
+                    oculosSolar ||
+                    ajuste ||
+                    entrega ||
+                    assistencia
+                  )"
+                >
+                  Adicionar
+                </v-btn>
               </v-col>
               <v-col cols="12" md="6">
                 <v-btn color="grey" block outlined @click="$router.go(-1)">Cancelar</v-btn>
@@ -87,7 +102,6 @@ export default {
     const vendedores = ref([]);
     const vendedorSelecionado = ref(null);
 
-    // Função para obter a data atual no formato YYYY-MM-DD
     const getCurrentDate = () => {
       const today = new Date();
       const day = String(today.getDate()).padStart(2, '0');
@@ -96,7 +110,6 @@ export default {
       return `${year}-${month}-${day}`;
     };
 
-    // Define a data atual no campo "data"
     data.value = getCurrentDate();
 
     const carregarVendedores = async () => {
@@ -116,26 +129,22 @@ export default {
       }
 
       try {
-        // Converter a data para o formato que o backend espera
         const dataFormatada = new Date(data.value).toISOString().split("T")[0]; // YYYY-MM-DD
-        
-        // Converter vendedor para número, garantindo que não seja string
+
         const vendedorID = parseInt(vendedorSelecionado.value);
 
-        // Chamar o back-end para adicionar ou atualizar o registro
         await AdicionarRegistro(
-          dataFormatada, // Data convertida
+          dataFormatada,
           parseInt(orcamentoReceita.value) || 0,
           parseInt(orcamentoSemReceita.value) || 0,
           parseInt(oculosSolar.value) || 0,
           parseInt(ajuste.value) || 0,
           parseInt(entrega.value) || 0,
           parseInt(assistencia.value) || 0,
-          vendedorID, // ID convertido para número
+          vendedorID,
           anotacoes.value
         );
 
-        // Após sucesso, redirecionar para a lista de registros
         router.push("/");
 
       } catch (error) {

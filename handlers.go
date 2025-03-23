@@ -2,7 +2,6 @@ package main
 
 import "fmt"
 
-// AdicionarRegistro manipula a criação ou atualização de um registro
 func AdicionarRegistro(data string, orcRec, orcSemRec, solar, ajuste, entrega, assistencia, vendedorID int, anotacoes string) error {
 	// Verificar se o vendedor existe
 	var vendedor Vendedor
@@ -65,7 +64,7 @@ func ListarRegistros() []map[string]interface{} {
 			"Entrega":             r.Entrega,
 			"Assistencia":         r.Assistencia,
 			"VendedorID":          r.VendedorID,
-			"VendedorNome":        r.Vendedor.Nome, // Nome do vendedor
+			"VendedorNome":        r.Vendedor.Nome,
 			"Anotacoes":           r.Anotacoes,
 		})
 	}
