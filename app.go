@@ -28,8 +28,8 @@ func (a *App) startup(ctx context.Context) {
 	a.ctx = ctx
 }
 
-func (a *App) AdicionarRegistro(data string, orcRec, orcSemRec, solar, ajuste, entrega, assistencia, vendedorID int, anotacoes string) error {
-	return AdicionarRegistro(data, orcRec, orcSemRec, solar, ajuste, entrega, assistencia, vendedorID, anotacoes)
+func (a *App) AdicionarRegistro(data string, orcRec, orcSemRec, solar, ajuste, entrega, assistencia, lenteContato int, fluxo int, venda int, vendedorID int, anotacoes string) error {
+	return AdicionarRegistro(data, orcRec, orcSemRec, solar, ajuste, entrega, assistencia, lenteContato, fluxo, venda, vendedorID, anotacoes)
 }
 
 func (a *App) ListarRegistros() []map[string]any {

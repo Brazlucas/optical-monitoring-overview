@@ -2,7 +2,20 @@ package main
 
 import "fmt"
 
-func AdicionarRegistro(data string, orcRec, orcSemRec, solar, ajuste, entrega, assistencia, vendedorID int, anotacoes string) error {
+func AdicionarRegistro(
+	data string,
+	orcRec,
+	orcSemRec,
+	solar,
+	ajuste,
+	entrega,
+	assistencia,
+	lenteContato int,
+	fluxo int,
+	venda int,
+	vendedorID int,
+	anotacoes string,
+) error {
 	// Verificar se o vendedor existe
 	var vendedor Vendedor
 	result := DB.First(&vendedor, vendedorID)
@@ -23,6 +36,9 @@ func AdicionarRegistro(data string, orcRec, orcSemRec, solar, ajuste, entrega, a
 		registro.Ajuste += ajuste
 		registro.Entrega += entrega
 		registro.Assistencia += assistencia
+		registro.LenteContato += lenteContato
+		registro.Fluxo += fluxo
+		registro.Venda += venda
 		registro.Anotacoes = anotacoes
 
 		result = DB.Save(&registro)
@@ -38,6 +54,9 @@ func AdicionarRegistro(data string, orcRec, orcSemRec, solar, ajuste, entrega, a
 			Assistencia:         assistencia,
 			VendedorID:          uint(vendedorID),
 			Vendedor:            vendedor, // Associar corretamente o vendedor
+			LenteContato:        lenteContato,
+			Fluxo:               fluxo,
+			Venda:               venda,
 			Anotacoes:           anotacoes,
 		}
 		result = DB.Create(&registro)
@@ -65,6 +84,9 @@ func ListarRegistros() []map[string]interface{} {
 			"Assistencia":         r.Assistencia,
 			"VendedorID":          r.VendedorID,
 			"VendedorNome":        r.Vendedor.Nome,
+			"LenteContato":        r.LenteContato,
+			"Fluxo":               r.Fluxo,
+			"Venda":               r.Venda,
 			"Anotacoes":           r.Anotacoes,
 		})
 	}

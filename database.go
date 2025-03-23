@@ -36,6 +36,9 @@ func InitDB() {
 type Registro struct {
 	ID                  uint `gorm:"primaryKey"`
 	Data                string
+	LenteContato        int
+	Fluxo               int
+	Venda               int
 	OrcamentoReceita    int
 	OrcamentoSemReceita int
 	OculosSolar         int

@@ -2,6 +2,9 @@
   <v-row class="pa-5">
     <v-col cols="12">
       <v-card elevation="3">
+        <v-card-title class="text-h5">Registros</v-card-title>
+        <v-divider></v-divider>
+
         <v-row class="ml-1 justify-end" no-gutters>
           <v-select
             v-model="anoFiltro"
@@ -23,14 +26,12 @@
             <v-icon left>mdi-plus</v-icon> Novo Registro
           </v-btn>
         </v-row>
-        <v-card-title class="text-h5">Registros</v-card-title>
-        <v-divider></v-divider>
 
         <v-data-table :headers="headers" :items="[]" item-value="id" density="comfortable">
           <template v-slot:body>
             <template v-for="(registros, data) in registrosAgrupados" :key="data">
               <tr>
-                <td colspan="9" class="text-center font-weight-bold bg-grey-lighten-2">
+                <td colspan="12" class="text-center font-weight-bold bg-grey-lighten-2">
                   {{ data }}
                 </td>
               </tr>
@@ -44,6 +45,9 @@
                 <td>{{ registro.Ajuste }}</td>
                 <td>{{ registro.Entrega }}</td>
                 <td>{{ registro.Assistencia }}</td>
+                <td>{{ registro.LenteContato }}</td>
+                <td>{{ registro.Fluxo }}</td>
+                <td>{{ registro.Venda }}</td>
                 <td>{{ registro.Anotacoes }}</td>
               </tr>
             </template>
@@ -80,6 +84,9 @@ export default {
       { title: "Ajuste", key: "Ajuste" },
       { title: "Entrega", key: "Entrega" },
       { title: "Assistência", key: "Assistencia" },
+      { title: "L/C - Ñ compra", key: "LenteContato" },
+      { title: "Fluxo", key: "Fluxo" },
+      { title: "Venda", key: "Venda" },
       { title: "Anotações", key: "Anotacoes" },
     ];
 

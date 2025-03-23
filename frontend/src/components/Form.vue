@@ -23,6 +23,18 @@
                 <v-col cols="12" md="6">
                   <v-text-field v-model="data" label="Data" type="date" outlined></v-text-field>
                 </v-col>
+                <!-- Lente de Contato -->
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="lenteContato" label="Lente de Contato" type="number" outlined></v-text-field>
+                </v-col>
+                <!-- Fluxo -->
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="fluxo" label="Fluxo" type="number" outlined></v-text-field>
+                </v-col>
+                <!-- Venda -->
+                <v-col cols="12" md="6">
+                  <v-text-field v-model="venda" label="Venda" type="number" outlined></v-text-field>
+                </v-col>
                 <!-- Orçamentos -->
                 <v-col cols="12" md="6">
                   <v-text-field v-model="orcamentoReceita" label="Orçamento c/ Receita" type="number" outlined></v-text-field>
@@ -66,7 +78,10 @@
                     oculosSolar ||
                     ajuste ||
                     entrega ||
-                    assistencia
+                    assistencia ||
+                    lenteContato ||
+                    fluxo ||
+                    venda
                   )"
                 >
                   Adicionar
@@ -101,6 +116,9 @@ export default {
     const anotacoes = ref("");
     const vendedores = ref([]);
     const vendedorSelecionado = ref(null);
+    const lenteContato = ref(0);
+    const fluxo = ref(0);
+    const venda = ref(0);
 
     const getCurrentDate = () => {
       const today = new Date();
@@ -141,6 +159,9 @@ export default {
           parseInt(ajuste.value) || 0,
           parseInt(entrega.value) || 0,
           parseInt(assistencia.value) || 0,
+          parseInt(lenteContato.value) || 0,
+          parseInt(fluxo.value) || 0,
+          parseInt(venda.value) || 0,
           vendedorID,
           anotacoes.value
         );
@@ -163,6 +184,9 @@ export default {
       anotacoes,
       vendedores,
       vendedorSelecionado,
+      lenteContato,
+      fluxo,
+      venda,
       adicionarRegistro,
     };
   },
