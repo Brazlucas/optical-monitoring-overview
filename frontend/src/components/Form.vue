@@ -1,14 +1,15 @@
 <template>
   <v-row class="pa-5">
     <v-col cols="12">
-      <v-card>
-        <v-card-title>Controle da Loja</v-card-title>
+      <v-card elevation="8" class="rounded-lg">
+        <v-card-title class="text-h5 font-weight-bold">Controle da Loja</v-card-title>
         <v-card-text>
           <v-form>
             <v-row>
               <!-- Seleção de Vendedor -->
               <v-col cols="12" md="6">
                 <v-select
+                  color="red"
                   v-model="vendedorSelecionado"
                   :items="vendedores"
                   item-title="Nome"
