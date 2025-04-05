@@ -67,17 +67,11 @@
               <td><strong>Total</strong></td>
 
               <td v-for="(total, campo) in totais" :key="total">
-                <v-hover v-slot:default="{ isHovering, props }">
-                  <a
-                    class="anchor-modal"
-                    v-bind="props"
-                    icon
-                    color="red"
-                    @click="abrirModal(campo, total)"
-                  >
-                    <b>{{ total }}</b>
-                  </a>
-                </v-hover>
+                <span
+                  @click="abrirModal(campo, total)"
+                >
+                  <b>{{ total }}</b>
+                </span>
               </td>
               <td></td>
             </tr>
@@ -146,7 +140,7 @@ export default {
 
     const formatData = (data) => {
       if (!data) return "Data inválida";
-      const date = new Date(data);
+      const date = new Date(`${data}T00:00:00`);
       return date.toLocaleDateString("pt-BR", {
         year: "numeric",
         month: "2-digit",
@@ -197,7 +191,7 @@ export default {
       computed(() =>
         Object.values(registrosAgrupados.value)
           .flat()
-          .reduce((sum, r) => sum + (r[campo] || 0), 0)
+          .reduce((sum, r) => sum + (r[campo] || ''), 0)
       );
 
     const totais = reactive({
